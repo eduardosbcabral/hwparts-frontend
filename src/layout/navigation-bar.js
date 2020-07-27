@@ -41,6 +41,8 @@ const TopItemsList = styled.ul`
     list-style: none;
     font-size: .75rem;
     display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
 `;
 
 const TopItemList = styled.li.attrs(props => ({
@@ -60,6 +62,7 @@ const TopItemLink = styled.a.attrs(props => ({
 
     :hover {
         color: #eda920;
+        text-decoration: none;
     }
 `;
 
@@ -85,7 +88,7 @@ const BottomNavWrapper = styled.div`
 `;
 
 const BottomItemsList = styled.ul.attrs(props => ({
-    display: props.menuBrowseProductsIsOpened ? 'block' : 'inline-block',
+    display: props.menuIsOpened ? 'block' : props.menuBrowseProductsIsOpened ? 'block' : 'inline-block',
     gridTemplateColumns: props.menuBrowseProductsIsOpened ? '1fr 1fr' : '0',
 }))`
     list-style: none;
@@ -122,13 +125,15 @@ const BottomItemLink = styled.a`
 
     :hover {
         background-color: #26293c;
-        
+        text-decoration: none;
+        color: #FCF7F8;
+
         svg {  
             color: #eda920;
         }
     }
 
-    svg {
+    svg:last-child {
         ${props => props.isOpened ? `transform: rotate(180deg);` : ''}        
     }
 
@@ -142,9 +147,9 @@ const BottomItemLink = styled.a`
 `;
 
 const BrowseProductsDiv = styled.div.attrs(props => ({
-    top: props.hide ? '-450px !important;' : '108px',
+    top: props.hide ? '-450px !important;' : props.menuTopHigh ? props.isClosed ? '-1000px !important' : '53px' : '106px',
 }))`
-    display: block;
+    display: ${props => props.display};
     position: fixed;
 
     background-color: #26293c;
@@ -159,7 +164,6 @@ const BrowseProductsDiv = styled.div.attrs(props => ({
 const StyledFaAngleDown = styled(FaAngleDown)`
     display: inline-block;
     position: relative;
-    top: 3px;
     left: 4px;
     transition: transform .45s cubic-bezier(.165,.84,.44,1);
     transform-origin: 50% 42%;
@@ -248,6 +252,7 @@ const BrowseProductsLeftListItem = styled.a`
         color: #fff;
         background-color: rgba(237,169,32,.15);
         box-shadow: inset 0 0 0 2px #eda920;
+        text-decoration: none;
     }
 
     img {
@@ -260,13 +265,64 @@ const BrowseProductsLeftListItem = styled.a`
     }
 `;
 
+const TopMobileItemsList = styled.ul.attrs(props => ({
+    display: props.accountMenuIsOpened ? 'block' : 'none',
+}))`
+    display: ${props => props.display};
+    font-size: 1.25rem;
+    background-color: #191b2b;
+    width: 100vw;
+    opacity: 1;
+    top: 45px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: calc(100vh - 45px);
+    overflow-y: scroll;
+    z-index: 200;
+    padding: 2rem;
+    margin-left: -15px;
+    margin-top: 7px;
+`;
+
+const TopMobileItemList = styled.li`
+    display: block;
+`;
+
+const TopMobileItemListLink = styled.a`
+    color: #fff;
+    border-color: #26293c;
+    display: block;
+    padding: .5rem 0;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    text-decoration: none;
+
+    :hover {
+        text-decoration: none;
+        color: #FCF7F8;
+        color: #eda920;
+    }
+`;
+
 function NavigationBar() {
 
     const [menuIsOpened, setmenuIsOpened] = useState(false);
     const [menuBrowseProductsIsOpened, setMenuBrowseProductsIsOpened] = useState(false);
+    const [accountMenuIsOpened, setAccountMenuIsOpened] = useState(false);
 
-    const toggleMenu = () => setmenuIsOpened(!menuIsOpened);
-    const toggleMenuBrowseProducts = () => setMenuBrowseProductsIsOpened(!menuBrowseProductsIsOpened);
+    const toggleMenu = () =>  {
+        setmenuIsOpened(!menuIsOpened)
+        setMenuBrowseProductsIsOpened(false);
+    }
+    const toggleMenuBrowseProducts = () => {
+        setMenuBrowseProductsIsOpened(!menuBrowseProductsIsOpened);
+        setmenuIsOpened(false);
+    }
+
+    const toggleAccountMenu = () => {
+        setAccountMenuIsOpened(!accountMenuIsOpened);
+    }
 
     return (
         <Header>
@@ -289,12 +345,17 @@ function NavigationBar() {
                             </TopItemList>
                         </TopItemsList>
                         <TopItemsList className="d-lg-none d-xl-none">
-                            <TopItemList>
+                            <TopItemList onClick={toggleAccountMenu} hide={accountMenuIsOpened || menuIsOpened}>
                                 <TopMobileItemLink href="#">
                                     <StyledFaRegUser />
                                 </TopMobileItemLink>
                             </TopItemList>
-                            <TopItemList onClick={toggleMenu} hide={menuIsOpened}>
+                            <TopItemList onClick={toggleAccountMenu} hide={!accountMenuIsOpened}>
+                                <TopMobileItemLink href="#">
+                                    <StyledFaTimes />
+                                </TopMobileItemLink>
+                            </TopItemList>
+                            <TopItemList onClick={toggleMenu} hide={accountMenuIsOpened || menuIsOpened}>
                                 <TopMobileItemLink href="#">
                                     <StyledFiMenu />
                                 </TopMobileItemLink>
@@ -305,6 +366,18 @@ function NavigationBar() {
                                 </TopMobileItemLink>
                             </TopItemList>
                         </TopItemsList>
+                        <TopMobileItemsList className="d-lg-none d-xl-none" accountMenuIsOpened={accountMenuIsOpened}>
+                            <TopMobileItemList>
+                                <TopMobileItemListLink href="#">
+                                    Entrar
+                                </TopMobileItemListLink>
+                            </TopMobileItemList>
+                            <TopMobileItemList>
+                                <TopMobileItemListLink href="#">
+                                    Cadastrar
+                                </TopMobileItemListLink>
+                            </TopMobileItemList>
+                        </TopMobileItemsList>
                     </TopNavWrapper>
                 </TopNav>
                 <BottomNav>
@@ -318,7 +391,7 @@ function NavigationBar() {
                                 </BottomItemLink>
                             </BottomItemList>
                             <BottomItemList>
-                                <BrowseProductsDiv hide={!menuBrowseProductsIsOpened}>
+                                <BrowseProductsDiv hide={!menuBrowseProductsIsOpened} menuTopHigh={false}>
                                     <BrowseProductsWrapper className="col-xs-10 col-sm-11 col-lg-11 col-xl-9 mx-auto">
                                         <BrowseProductsBlockGroupOne>
                                             <BrowseProductsLeftList>
@@ -371,6 +444,57 @@ function NavigationBar() {
                                 </BrowseProductsDiv>
                             </BottomItemList>
                         </BottomItemsList>
+                        <BrowseProductsDiv isClosed={!menuIsOpened} menuTopHigh={true}>
+                            <BrowseProductsWrapper className="col-xs-10 col-sm-11 col-lg-11 col-xl-9 mx-auto">
+                                <BrowseProductsBlockGroupOne>
+                                    <BrowseProductsLeftList>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-cpu.png" alt="Processador" />
+                                                Processador
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-motherboard.png" alt="Placa-Mãe" />
+                                                Placa-Mãe
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-memory.png" alt="Memória RAM" />
+                                                Memória RAM
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-ssd.png" alt="Storage" />
+                                                Storage
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-videocard.png" alt="Placa de Vídeo" />Placa de Vídeo
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-powersupply.png" alt="Fonte" />
+                                                Fonte
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                        <li>
+                                            <BrowseProductsLeftListItem href="">
+                                                <img src="//cdn.pcpartpicker.com/static/forever/img/nav-case.png" alt="Gabinete" />
+                                                    Gabinete
+                                            </BrowseProductsLeftListItem>
+                                        </li>
+                                    </BrowseProductsLeftList>
+                                </BrowseProductsBlockGroupOne>
+                                <BrowseProductsBlockGroupTwo>
+                                </BrowseProductsBlockGroupTwo>
+                            </BrowseProductsWrapper>
+                        </BrowseProductsDiv>
                     </BottomNavWrapper>
                 </BottomNav>
             </Nav>
