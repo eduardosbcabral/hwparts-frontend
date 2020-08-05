@@ -14,6 +14,23 @@
   --white: #FFFFFF;
   --primary: var(--blue);
   --secondary: var(--gray);
+
+  --mobile-min: 320px;
+  --mobile-max: 480px;
+
+  --tablet-min: 481px;
+  --tablet-max: 768px;
+
+  --m-min: 769px;
+  --m-max: 1024px;
+
+  --l-min: 1025px;
+  --l-max: 1200px;
+
+  --xl-min: 1201px;
+  --xl-min: 1499px;
+
+  --xxl-min: 1500px;
 }
 
 html,
@@ -26,6 +43,7 @@ body {
 
 a {
   color: inherit;
+  text-decoration: none;
 } 
 
 #root {
